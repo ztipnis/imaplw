@@ -1,0 +1,2 @@
+# imaplw
+Lightweight IMAP Server
