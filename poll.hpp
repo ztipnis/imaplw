@@ -31,8 +31,7 @@ namespace Pollster{
 
 
 	class Handler{
-	friend class Pollster;
-	protected:
+	public:
 		virtual void operator()(int fd) = 0;
 		virtual void disconnect(int fd, std::string reason) = 0;
 	};

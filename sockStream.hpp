@@ -1,8 +1,9 @@
 #include <iostream>
-#include "poll.h"
+#include "poll.hpp"
 #include <sys/socket.h>
 #include <netinet/in.h> 
 #include <arpa/inet.h>
+#include "ThreadPool/ThreadPool.h"
 
 
 class PrintHandler : Pollster::Handler {
@@ -23,7 +24,7 @@ class PrintHandler : Pollster::Handler {
 };
 class SocketPool {
 public:
-	SocketPool(unsigned int port, const char* addr, int max_Clients, Pollster::Handler& T):sock(socket(PF_INET, SOCK_STREAM, 0)), handler(T), cliPerPollster(max_Clients){
+	SocketPool(unsigned int port, const char* addr, int max_Clients, int max_Threads, Pollster::Handler& T):sock(socket(PF_INET, SOCK_STREAM, 0)), handler(T), cliPerPollster(max_Clients/max_Threads), pollsters(max_Threads){
 		sockaddr_in sockopt;
 		if(sock < 0){
 			throw std::runtime_error("Unable to create socket");
@@ -78,12 +79,16 @@ private:
        				}
        			}
        			if(!assigned){
-       				Pollster::Pollster p_ = Pollster::Pollster(cliPerPollster,handler);
-       				if(!p_.addClient(cli_fd)){
-       					throw std::runtime_error("Unable to add client to new Pollster");
+       				if(p.size() < pollsters){
+       					Pollster::Pollster p_ = Pollster::Pollster(cliPerPollster,handler);
+	       				if(!p_.addClient(cli_fd)){
+	       					throw std::runtime_error("Unable to add client to new Pollster");
+	       				}
+	       				p.push_back(p_);
+	       				//TODO: Thread the loop
+       				}else{
+       					handler.disconnect(cli_fd, "Too many simultaneos connections...");
        				}
-       				p.push_back(p_);
-       				//TODO: Thread the loop
        			}
        		}
 	}
@@ -91,4 +96,6 @@ private:
 	Pollster::Handler& handler;
 	std::vector<Pollster::Pollster> p;
 	int cliPerPollster;
+	int pollsters;
+	static ThreadPool pool;
 };
