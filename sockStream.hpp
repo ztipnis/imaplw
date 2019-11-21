@@ -85,7 +85,7 @@ private:
 	       					throw std::runtime_error("Unable to add client to new Pollster");
 	       				}
 	       				p.push_back(p_);
-	       				auto result = poll.enqueue([](){ p_.loop(); });
+	       				auto result = pool.enqueue([](Pollster::Pollster& plstr){ plstr(); }, p_);
        				}else{
        					handler.disconnect(cli_fd, "Too many simultaneos connections...");
        				}
@@ -97,5 +97,5 @@ private:
 	std::vector<Pollster::Pollster> p;
 	int cliPerPollster;
 	int pollsters;
-	static ThreadPool pool;
+	ThreadPool pool;
 };
