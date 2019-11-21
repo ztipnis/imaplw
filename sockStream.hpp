@@ -24,7 +24,7 @@ class PrintHandler : Pollster::Handler {
 };
 class SocketPool {
 public:
-	SocketPool(unsigned int port, const char* addr, int max_Clients, int max_Threads, Pollster::Handler& T):sock(socket(PF_INET, SOCK_STREAM, 0)), handler(T), cliPerPollster(max_Clients/max_Threads), pollsters(max_Threads){
+	SocketPool(unsigned int port, const char* addr, int max_Clients, int max_Threads, Pollster::Handler& T):sock(socket(PF_INET, SOCK_STREAM, 0)), handler(T), cliPerPollster(max_Clients/max_Threads), pollsters(max_Threads), pool(max_Threads){
 		sockaddr_in sockopt;
 		if(sock < 0){
 			throw std::runtime_error("Unable to create socket");
@@ -85,7 +85,7 @@ private:
 	       					throw std::runtime_error("Unable to add client to new Pollster");
 	       				}
 	       				p.push_back(p_);
-	       				//TODO: Thread the loop
+	       				auto result = poll.enqueue([](){ p_.loop(); });
        				}else{
        					handler.disconnect(cli_fd, "Too many simultaneos connections...");
        				}
