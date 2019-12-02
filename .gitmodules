@@ -1,0 +1,4 @@
+[submodule "SocketPool"]
+	path = SocketPool
+	url = https://github.com/ztipnis/SocketPool
+	branch = master
