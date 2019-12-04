@@ -2,7 +2,18 @@
 #import <string>
 #import <map>
 #import <sstream>
+#import <uuid/uuid.h>
 #import "../SocketPool/SocketPool.hpp"
+
+
+
+std::string gen_uuid(){
+	uuid_t id;
+	uuid_generate( (unsigned char *)&id );
+	std::string uu(reinterpret_cast<char*>(id), 16);
+	return uu;
+}
+
 
 class AuthenticationProvider {
 public:
@@ -47,6 +58,7 @@ namespace IMAPProvider{
 	template <class A>
 	class IMAPClientState {
 	private:
+		std::string uuid;
 		bool encrypted;
 		bool authenticated;
 		std::string user;
@@ -59,6 +71,7 @@ namespace IMAPProvider{
 			user = "";
 			selected = false;
 			mbox = "";
+			uuid = gen_uuid();
 		}
 		const IMAPState_t state() const{
 			if(!encrypted){
@@ -79,6 +92,9 @@ namespace IMAPProvider{
 		const std::string getMBox() const{
 			return mbox;
 		}
+		const std::string get_uuid() const{
+			return uuid;
+		}
 		bool authenticate(const std::string& username, const std::string& password){
 			AuthenticationProvider& provider = AuthenticationProvider::getInst<A>();
 			if(provider.lookup(username) == false){
@@ -96,7 +112,10 @@ namespace IMAPProvider{
 	class IMAPProvider: public Pollster::Handler{
 	private:
 		//ANY STATE
-		static void CAPABILITY(int rfd);
+		static void CAPABILITY(int rfd, std::string tag){
+			respond(rfd, "*", "CAPABILITY", "IMAP4rev1");
+			OK(rfd, tag, "CAPABILITY executed successfully");
+		}
 		static void NOOP(int rfd);
 		static void LOGOUT(int rfd);
 		//UNAUTHENTICATED
@@ -126,27 +145,27 @@ namespace IMAPProvider{
 
 
 		//RESPONSES
-		static inline void repsond(int rfd, std::string tag, std::string code, std::string message){
+		static inline void respond(int rfd, std::string tag, std::string code, std::string message){
 			sendMsg(rfd, tag + " "+ code +" " + message + "\n");
 		}
 
 		static void OK(int rfd, std::string tag, std::string message){
-			repsond(rfd, tag, "OK", message);
+			respond(rfd, tag, "OK", message);
 		}
 		
-		static void NO(int rfd, std::string tag){
-			repsond(rfd, tag, "NO", message);
+		static void NO(int rfd, std::string tag, std::string message){
+			respond(rfd, tag, "NO", message);
 		}
 
 		static void BAD(int rfd, std::string tag, std::string message){
-			repsond(rfd, tag, "BAD", message);
+			respond(rfd, tag, "BAD", message);
 		}
-		static void PREAUTH(int rfd, std::string tag){
-			repsond(rfd, tag, "PREAUTH", message);
+		static void PREAUTH(int rfd, std::string tag, std::string message){
+			respond(rfd, tag, "PREAUTH", message);
 		}
 
 		static void BYE(int rfd, std::string tag, std::string message){
-			repsond(rfd, tag, "BYE", message);
+			respond(rfd, tag, "BYE", message);
 		}
 
 		// static std::map<int, IMAPClientState> map;
@@ -184,6 +203,14 @@ namespace IMAPProvider{
 		void disconnect(int fd, std::string reason) const{
 			BYE(fd, "*", reason);
 			close(fd);
+		}
+		void connect(int fd) const{
+			struct sockaddr_in addr;
+			socklen_t addrlen = sizeof(addr);
+			int getaddr = getpeername(fd, (struct sockaddr *) &addr, &addrlen);
+			std::string address(inet_ntoa(addr.sin_addr));
+			std::string uuid = gen_uuid();
+			OK(fd, "*", "Welcome to IMAPlw. IMAP ready for requests from " + address + " " + uuid);
 		}
 	};
 }
