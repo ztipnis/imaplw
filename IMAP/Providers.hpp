@@ -3,15 +3,30 @@
 #import <map>
 #import <sstream>
 #import <uuid/uuid.h>
+#import <cstdlib>
+#include <algorithm>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
 #import "../SocketPool/SocketPool.hpp"
 
 
 
-std::string gen_uuid(){
+std::string gen_uuid(int len){
 	uuid_t id;
 	uuid_generate( (unsigned char *)&id );
-	std::string uu(reinterpret_cast<char*>(id), 16);
-	return uu;
+	srand(1);
+	char *uuid = new char[len + 1];
+	uuid[len] = '\0';
+	const char alphanum[36] = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+								'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+								'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+								'u', 'v', 'w', 'x', 'y', 'z'};
+	for(int i = 0; i < len; i++){
+		srand(reinterpret_cast<unsigned int &>(id[i % 16]) + rand());
+		uuid[i] = alphanum[rand() % 36];
+	}
+	std::string uuid_r(uuid);
+	return uuid_r;
 }
 
 
@@ -55,7 +70,7 @@ inline void sendMsg(int fd, const std::string &data){
 namespace IMAPProvider{
 	typedef enum { UNENC, UNAUTH, AUTH, SELECTED } IMAPState_t;
 
-	template <class A>
+	//template <class A>
 	class IMAPClientState {
 	private:
 		std::string uuid;
@@ -71,7 +86,7 @@ namespace IMAPProvider{
 			user = "";
 			selected = false;
 			mbox = "";
-			uuid = gen_uuid();
+			uuid = gen_uuid(15);
 		}
 		const IMAPState_t state() const{
 			if(!encrypted){
@@ -95,22 +110,23 @@ namespace IMAPProvider{
 		const std::string get_uuid() const{
 			return uuid;
 		}
-		bool authenticate(const std::string& username, const std::string& password){
-			AuthenticationProvider& provider = AuthenticationProvider::getInst<A>();
-			if(provider.lookup(username) == false){
-				return false;
-			}
-			if(provider.authenticate(username, password)){
-				user = username;
-				return true;
-			}
-			return false;
-		}
+		// bool authenticate(const std::string& username, const std::string& password){
+		// 	AuthenticationProvider& provider = AuthenticationProvider::getInst<A>();
+		// 	if(provider.lookup(username) == false){
+		// 		return false;
+		// 	}
+		// 	if(provider.authenticate(username, password)){
+		// 		user = username;
+		// 		return true;
+		// 	}
+		// 	return false;
+		// }
 	};
 
 	// template <class D>
 	class IMAPProvider: public Pollster::Handler{
 	private:
+		static std::map<int, IMAPClientState> states;
 		//ANY STATE
 		static void CAPABILITY(int rfd, std::string tag){
 			respond(rfd, "*", "CAPABILITY", "IMAP4rev1");
@@ -150,7 +166,7 @@ namespace IMAPProvider{
 		}
 
 		static void OK(int rfd, std::string tag, std::string message){
-			respond(rfd, tag, "OK", message);
+			respond(rfd, tag, "OK", message + " " + states[rfd].get_uuid());
 		}
 		
 		static void NO(int rfd, std::string tag, std::string message){
@@ -171,7 +187,12 @@ namespace IMAPProvider{
 		// static std::map<int, IMAPClientState> map;
 
 		static void route(int fd, std::string tag, std::string command, std::string args){
-			BAD(fd, tag, "Command \"" + command + "\" NOT FOUND");
+			std::transform(command.begin(), command.end(),command.begin(), ::toupper); //https://stackoverflow.com/questions/735204/convert-a-string-in-c-to-upper-case
+			if(command == "CAPABILITY"){
+				CAPABILITY(fd, tag);
+			}else{
+				BAD(fd, tag, "Command \"" + command + "\" NOT FOUND");
+			}
 		}
 
 		static void parse(int fd, std::string message){
@@ -189,7 +210,13 @@ namespace IMAPProvider{
 		}
 
 	public:
-
+		IMAPProvider(){
+			SSL_load_error_strings();	
+   			OpenSSL_add_ssl_algorithms();
+		}
+		~IMAPProvider(){
+			EVP_cleanup();
+		}
 		void operator()(int fd) const{
 			std::string data(8193, 0);
 			int rcvd = recv(fd, &data[0], 8192, MSG_DONTWAIT);
@@ -209,10 +236,8 @@ namespace IMAPProvider{
 			socklen_t addrlen = sizeof(addr);
 			int getaddr = getpeername(fd, (struct sockaddr *) &addr, &addrlen);
 			std::string address(inet_ntoa(addr.sin_addr));
-			std::string uuid = gen_uuid();
-			OK(fd, "*", "Welcome to IMAPlw. IMAP ready for requests from " + address + " " + uuid);
+			OK(fd, "*", "Welcome to IMAPlw. IMAP ready for requests from " + address);
 		}
 	};
+	std::map<int, IMAPClientState> IMAPProvider::states;
 }
-
-
