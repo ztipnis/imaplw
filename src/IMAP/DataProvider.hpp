@@ -1,3 +1,4 @@
+#import <string>
 #ifndef __IMAP_DATA_PROVIDER__
 #define __IMAP_DATA_PROVIDER__
 

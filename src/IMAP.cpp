@@ -1,3 +1,4 @@
+#import "IMAP/DataProvider.hpp"
 #import "SocketPool/SocketPool.hpp"
 #import "IMAP/Providers.hpp"
 #import <iostream>
@@ -11,7 +12,7 @@ int main(int argc, char* argv[]){
 	unsigned int port = 8080;
 	const char* address = "0.0.0.0";
 	IMAPProvider::Config c(true, false, "secure", "secure", "server.key", "server.crt");
-	IMAPProvider::IMAPProvider p = IMAPProvider::IMAPProvider(c);
+	IMAPProvider::IMAPProvider<AuthenticationProvider, DataProvider> p(c);
 	SocketPool sp(port, address, atoi(argv[1]), atoi(argv[2]), p);
 	while(1){
 		sp.listen(std::chrono::minutes(0));

@@ -11,10 +11,11 @@
 #define __IMAP_PROVIDERS__
 
 namespace IMAPProvider{
+	template <class AuthP, class DataP>
 	class IMAPProvider: public Pollster::Handler{
 	private:
 		const Config &config;
-		static std::map<int, IMAPClientState> states;
+		static std::map<int, IMAPClientState<AuthP> > states;
 		struct tls *tls = NULL;
 		struct tls_config *t_conf = NULL;
 		//ANY STATE
@@ -73,8 +74,10 @@ namespace IMAPProvider{
 		void connect(int fd) const;
 	};
 }
-std::map<int, IMAPProvider::IMAPClientState> IMAPProvider::IMAPProvider::states;
-void IMAPProvider::IMAPProvider::operator()(int fd) const{
+template<class AuthP, class DataP>
+std::map<int, typename IMAPProvider::IMAPClientState<AuthP> > IMAPProvider::IMAPProvider<AuthP, DataP>::states;
+template<class AuthP, class DataP>
+void IMAPProvider::IMAPProvider<AuthP, DataP>::operator()(int fd) const{
 	std::string data(8193, 0);
 	int rcvd;
 	if(states[fd].state() != UNENC){
@@ -89,7 +92,8 @@ void IMAPProvider::IMAPProvider::operator()(int fd) const{
 		parse(fd, data);
 	}
 }
-void IMAPProvider::IMAPProvider::disconnect(int fd, const std::string &reason) const{
+template<class AuthP, class DataP>
+void IMAPProvider::IMAPProvider<AuthP, DataP>::disconnect(int fd, const std::string &reason) const{
 	BYE(fd, "*", reason);
 	if(states[fd].tls !=  NULL){
 		tls_close(states[fd].tls);
@@ -98,7 +102,8 @@ void IMAPProvider::IMAPProvider::disconnect(int fd, const std::string &reason) c
 	states.erase(fd);
 	close(fd);
 }
-void IMAPProvider::IMAPProvider::connect(int fd) const{
+template<class AuthP, class DataP>
+void IMAPProvider::IMAPProvider<AuthP, DataP>::connect(int fd) const{
 	if(config.secure){
 		if(tls_accept_socket(tls, &states[fd].tls, fd) < 0) {
 			disconnect(fd, "TLS Negotiation Failed");
@@ -116,28 +121,30 @@ void IMAPProvider::IMAPProvider::connect(int fd) const{
 	std::string address(inet_ntoa(addr.sin_addr));
 	OK(fd, "*", "Welcome to IMAPlw. IMAP ready for requests from " + address);
 }
-void IMAPProvider::IMAPProvider::tls_setup(){
+template<class AuthP, class DataP>
+void IMAPProvider::IMAPProvider<AuthP, DataP>::tls_setup(){
 	t_conf = tls_config_new();
 	tls = tls_server();
 	unsigned int protocols = 0;
-	if(tls_config_parse_protocols(&protocols, cfg.versions) < 0){
+	if(tls_config_parse_protocols(&protocols, config.versions) < 0){
 		printf("tls_config_parse_protocols error\n");
 	}
 	tls_config_set_protocols(t_conf, protocols);
-	if(tls_config_set_ciphers(t_conf, cfg.ciphers) < 0) {
+	if(tls_config_set_ciphers(t_conf, config.ciphers) < 0) {
 		printf("tls_config_set_ciphers error\n");
 	}
-	if(tls_config_set_key_file(t_conf, cfg.keypath) < 0) {
+	if(tls_config_set_key_file(t_conf, config.keypath) < 0) {
 		printf("tls_config_set_key_file error\n");
 	}
-	if(tls_config_set_cert_file(t_conf, cfg.certpath) < 0) {
+	if(tls_config_set_cert_file(t_conf, config.certpath) < 0) {
 		printf("tls_config_set_cert_file error\n");
 	}
 	if(tls_configure(tls, t_conf) < 0) {
 		printf("tls_configure error: %s\n", tls_error(tls));
 	}
 }
-void IMAPProvider::IMAPProvider::tls_cleanup(){
+template<class AuthP, class DataP>
+void IMAPProvider::IMAPProvider<AuthP, DataP>::tls_cleanup(){
 	if(t_conf != NULL){
 		tls_config_free(t_conf);
 	}
@@ -146,7 +153,8 @@ void IMAPProvider::IMAPProvider::tls_cleanup(){
 		tls_free(tls);
 	}
 }
-void IMAPProvider::IMAPProvider::CAPABILITY(int rfd, std::string tag) const{
+template<class AuthP, class DataP>
+void IMAPProvider::IMAPProvider<AuthP, DataP>::CAPABILITY(int rfd, std::string tag) const{
 	if(config.starttls && !config.secure && (states[rfd].state() == UNENC)){
 		respond(rfd, "*", "CAPABILITY", "IMAP4rev1 STARTTLS");
 	}else{
@@ -154,7 +162,8 @@ void IMAPProvider::IMAPProvider::CAPABILITY(int rfd, std::string tag) const{
 	}
 	OK(rfd, tag, "CAPABILITY executed successfully");
 }
-void IMAPProvider::IMAPProvider::STARTTLS(int rfd, std::string tag) const{
+template<class AuthP, class DataP>
+void IMAPProvider::IMAPProvider<AuthP, DataP>::STARTTLS(int rfd, std::string tag) const{
 	if(config.starttls && !config.secure && (states[rfd].state() == UNENC)){
 		OK(rfd, tag, "Begin TLS Negotiation Now");
 		if(tls_accept_socket(tls, &states[rfd].tls, rfd) < 0) {
@@ -170,7 +179,8 @@ void IMAPProvider::IMAPProvider::STARTTLS(int rfd, std::string tag) const{
 		BAD(rfd, tag, "STARTTLS Disabled");
 	}
 }
-void IMAPProvider::IMAPProvider::route(int fd, std::string tag, std::string command, std::string args) const{
+template<class AuthP, class DataP>
+void IMAPProvider::IMAPProvider<AuthP, DataP>::route(int fd, std::string tag, std::string command, std::string args) const{
 	std::transform(command.begin(), command.end(),command.begin(), ::toupper); //https://stackoverflow.com/questions/735204/convert-a-string-in-c-to-upper-case
 	if(command == "CAPABILITY"){
 		CAPABILITY(fd, tag);
@@ -180,7 +190,8 @@ void IMAPProvider::IMAPProvider::route(int fd, std::string tag, std::string comm
 		BAD(fd, tag, "Command \"" + command + "\" NOT FOUND");
 	}
 }
-void IMAPProvider::IMAPProvider::parse(int fd, std::string message) const{
+template<class AuthP, class DataP>
+void IMAPProvider::IMAPProvider<AuthP, DataP>::parse(int fd, std::string message) const{
 	std::stringstream mstream(message);
 	std::string tag, command, args;
 	if(mstream >> tag >> command){

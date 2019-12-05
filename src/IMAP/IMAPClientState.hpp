@@ -1,10 +1,12 @@
 #import "Helpers.hpp"
+#import "AuthenticationProvider.hpp"
 
 #ifndef __IMAP_CLIENT_STATE__
 #define __IMAP_CLIENT_STATE__
 
 namespace IMAPProvider{
 	typedef enum { UNENC, UNAUTH, AUTH, SELECTED } IMAPState_t;
+	template <class A>
 	class IMAPClientState {
 	private:
 		std::string uuid;
@@ -52,17 +54,17 @@ namespace IMAPProvider{
 		const std::string get_uuid() const{
 			return uuid;
 		}
-		// bool authenticate(const std::string& username, const std::string& password){
-		// 	AuthenticationProvider& provider = AuthenticationProvider::getInst<A>();
-		// 	if(provider.lookup(username) == false){
-		// 		return false;
-		// 	}
-		// 	if(provider.authenticate(username, password)){
-		// 		user = username;
-		// 		return true;
-		// 	}
-		// 	return false;
-		// }
+		bool authenticate(const std::string& username, const std::string& password){
+			AuthenticationProvider& provider = AuthenticationProvider::getInst<A>();
+			if(provider.lookup(username) == false){
+				return false;
+			}
+			if(provider.authenticate(username, password)){
+				user = username;
+				return true;
+			}
+			return false;
+		}
 	};
 }
 
