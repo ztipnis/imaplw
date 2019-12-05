@@ -1,15 +1,14 @@
-// #import <iostream>
 #import <string>
 #import <map>
 #import <sstream>
-#import <uuid/uuid.h>
-#import <cstdlib>
-#import <algorithm>
 #import <tls.h>
 #import "../SocketPool/SocketPool.hpp"
-#import "config.hpp"
-#import "Helpers.hpp"
 #import "IMAPClientState.hpp"
+#import "Helpers.hpp"
+#import "config.hpp"
+
+#ifndef __IMAP_PROVIDERS__
+#define __IMAP_PROVIDERS__
 
 namespace IMAPProvider{
 	class IMAPProvider: public Pollster::Handler{
@@ -128,11 +127,9 @@ namespace IMAPProvider{
 void IMAPProvider::IMAPProvider::connect(int fd) const{
 	if(config.secure){
 		if(tls_accept_socket(tls, &states[fd].tls, fd) < 0) {
-			std::cout << "tls_accept_socket error" << std::endl;
 			disconnect(fd, "TLS Negotiation Failed");
 		}else{
 			if(tls_handshake(states[fd].tls) < 0){
-				std::cout << "tls_handshake error" << std::endl;
 				disconnect(fd, "TLS Negotiation Failed");
 			}else{
 				states[fd].starttls();
@@ -162,10 +159,10 @@ void IMAPProvider::IMAPProvider::STARTTLS(int rfd, std::string tag) const{
 	if(config.starttls && !config.secure && (states[rfd].state() == UNENC)){
 		OK(rfd, tag, "Begin TLS Negotiation Now");
 		if(tls_accept_socket(tls, &states[rfd].tls, rfd) < 0) {
-			std::cout << "tls_accept_socket error" << std::endl;
+			BAD(rfd, "*", "tls_accept_socket error");
 		}else{
 			if(tls_handshake(states[rfd].tls) < 0){
-				std::cout << "tls_handshake error" << std::endl;
+				BAD(rfd, "*", "tls_handshake error");
 			}else{
 				states[rfd].starttls();
 			}
@@ -197,6 +194,8 @@ void IMAPProvider::IMAPProvider::parse(int fd, std::string message) const{
 		BAD(fd, "*", "Unable to parse command");
 	}
 }
+
+#endif
 
 
 
