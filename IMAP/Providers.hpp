@@ -71,7 +71,7 @@ namespace IMAPProvider{
 				t_conf = tls_config_new();
 				tls = tls_server();
 				unsigned int protocols = 0;
-				if(tls_config_parse_protocols(&protocols, "all") < 0){
+				if(tls_config_parse_protocols(&protocols, cfg.versions) < 0){
 					printf("tls_config_parse_protocols error\n");
 				}
 				tls_config_set_protocols(t_conf, protocols);
