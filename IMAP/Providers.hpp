@@ -63,67 +63,41 @@ namespace IMAPProvider{
 		void BYE(int rfd, std::string tag, std::string message) const{ respond(rfd, tag, "BYE", message); }
 		void route(int fd, std::string tag, std::string command, std::string args) const;
 		void parse(int fd, std::string message) const;
-
+		void tls_setup();
+		void tls_cleanup();
 	public:
-		IMAPProvider(Config &cfg) : config(cfg){
-			if(cfg.secure || cfg.starttls){
-				t_conf = tls_config_new();
-				tls = tls_server();
-				unsigned int protocols = 0;
-				if(tls_config_parse_protocols(&protocols, cfg.versions) < 0){
-					printf("tls_config_parse_protocols error\n");
-				}
-				tls_config_set_protocols(t_conf, protocols);
-				if(tls_config_set_ciphers(t_conf, cfg.ciphers) < 0) {\
-					printf("tls_config_set_ciphers error\n");
-				}
-				if(tls_config_set_key_file(t_conf, cfg.keypath) < 0) {
-					printf("tls_config_set_key_file error\n");
-				}
-				if(tls_config_set_cert_file(t_conf, cfg.certpath) < 0) {
-					printf("tls_config_set_cert_file error\n");
-				}
-				if(tls_configure(tls, t_conf) < 0) {
-					printf("tls_configure error: %s\n", tls_error(tls));
-				}
-			}
-
-		}
-		~IMAPProvider(){
-			if(t_conf != NULL){
-				tls_config_free(t_conf);
-			}
-		}
-		void operator()(int fd) const{
-			std::string data(8193, 0);
-
-
-			int rcvd;
-			if(states[fd].state() != UNENC){
-				rcvd = tls_read(states[fd].tls, &data[0], 8912);
-			}else{
-				rcvd= recv(fd, &data[0], 8192, MSG_DONTWAIT);
-			}
-			if( rcvd == -1){
-				disconnect(fd, "Unable to read from socket");
-			}else{
-				data.resize(rcvd);
-				parse(fd, data);
-			}
-		}
-		void disconnect(int fd, std::string reason) const{
-			BYE(fd, "*", reason);
-			if(states[fd].tls !=  NULL){
-				tls_close(states[fd].tls);
-				tls_free(states[fd].tls);
-			}
-			states.erase(fd);
-			close(fd);
-		}
+		IMAPProvider(Config &cfg) : config(cfg){ if(cfg.secure || cfg.starttls) tls_setup(); }
+		~IMAPProvider(){ tls_cleanup(); }
+		void operator()(int fd) const;
+		void disconnect(int fd, const std::string &reason) const;
 		void connect(int fd) const;
 	};
 }
-
+std::map<int, IMAPProvider::IMAPClientState> IMAPProvider::IMAPProvider::states;
+void IMAPProvider::IMAPProvider::operator()(int fd) const{
+	std::string data(8193, 0);
+	int rcvd;
+	if(states[fd].state() != UNENC){
+		rcvd = tls_read(states[fd].tls, &data[0], 8912);
+	}else{
+		rcvd= recv(fd, &data[0], 8192, MSG_DONTWAIT);
+	}
+	if( rcvd == -1){
+		disconnect(fd, "Unable to read from socket");
+	}else{
+		data.resize(rcvd);
+		parse(fd, data);
+	}
+}
+void IMAPProvider::IMAPProvider::disconnect(int fd, const std::string &reason) const{
+	BYE(fd, "*", reason);
+	if(states[fd].tls !=  NULL){
+		tls_close(states[fd].tls);
+		tls_free(states[fd].tls);
+	}
+	states.erase(fd);
+	close(fd);
+}
 void IMAPProvider::IMAPProvider::connect(int fd) const{
 	if(config.secure){
 		if(tls_accept_socket(tls, &states[fd].tls, fd) < 0) {
@@ -142,11 +116,36 @@ void IMAPProvider::IMAPProvider::connect(int fd) const{
 	std::string address(inet_ntoa(addr.sin_addr));
 	OK(fd, "*", "Welcome to IMAPlw. IMAP ready for requests from " + address);
 }
-
-
-
-std::map<int, IMAPProvider::IMAPClientState> IMAPProvider::IMAPProvider::states;
-
+void IMAPProvider::IMAPProvider::tls_setup(){
+	t_conf = tls_config_new();
+	tls = tls_server();
+	unsigned int protocols = 0;
+	if(tls_config_parse_protocols(&protocols, cfg.versions) < 0){
+		printf("tls_config_parse_protocols error\n");
+	}
+	tls_config_set_protocols(t_conf, protocols);
+	if(tls_config_set_ciphers(t_conf, cfg.ciphers) < 0) {
+		printf("tls_config_set_ciphers error\n");
+	}
+	if(tls_config_set_key_file(t_conf, cfg.keypath) < 0) {
+		printf("tls_config_set_key_file error\n");
+	}
+	if(tls_config_set_cert_file(t_conf, cfg.certpath) < 0) {
+		printf("tls_config_set_cert_file error\n");
+	}
+	if(tls_configure(tls, t_conf) < 0) {
+		printf("tls_configure error: %s\n", tls_error(tls));
+	}
+}
+void IMAPProvider::IMAPProvider::tls_cleanup(){
+	if(t_conf != NULL){
+		tls_config_free(t_conf);
+	}
+	if(tls != NULL){
+		tls_close(tls);
+		tls_free(tls);
+	}
+}
 void IMAPProvider::IMAPProvider::CAPABILITY(int rfd, std::string tag) const{
 	if(config.starttls && !config.secure && (states[rfd].state() == UNENC)){
 		respond(rfd, "*", "CAPABILITY", "IMAP4rev1 STARTTLS");
