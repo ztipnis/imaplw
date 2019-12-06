@@ -1,5 +1,5 @@
 #import "IMAP/DataProvider.hpp"
-#import "SocketPool/SocketPool.hpp"
+#import <SocketPool.hpp>
 #import "IMAP/Providers.hpp"
 #import <iostream>
 
