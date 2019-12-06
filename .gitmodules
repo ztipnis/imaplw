@@ -2,3 +2,4 @@
 	path = SocketPool
 	url = https://github.com/ztipnis/SocketPool
 	branch = master
+	update = rebase
