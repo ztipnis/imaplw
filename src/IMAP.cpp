@@ -3,6 +3,13 @@
 #import "IMAP/Providers.hpp"
 #import <iostream>
 
+class GAuthP : public AuthenticationProvider{
+public:
+	bool lookup(std::string username){ return true; }
+	bool authenticate(std::string username, std::string password){ return true; }
+	GAuthP() : AuthenticationProvider("AUTH=PLAIN"){}
+};
+
 int main(int argc, char* argv[]){
 	if(argc < 3){
 		std::cerr << "USAGE: " << argv[0] << " #clients #threads" << std::endl;
@@ -12,9 +19,9 @@ int main(int argc, char* argv[]){
 	unsigned int port = 8080;
 	const char* address = "0.0.0.0";
 	IMAPProvider::Config c(true, false, "secure", "secure", "server.key", "server.crt");
-	IMAPProvider::IMAPProvider<AuthenticationProvider, DataProvider> p(c);
-	SocketPool sp(port, address, atoi(argv[1]), atoi(argv[2]), p);
+	IMAPProvider::IMAPProvider<GAuthP, DataProvider> p(c);
+	SocketPool sp(port, address, atoi(argv[1]), atoi(argv[2]), p, std::chrono::minutes(5));
 	while(1){
-		sp.listen(std::chrono::minutes(0));
+		sp.listen();
 	}
 }
