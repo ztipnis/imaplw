@@ -1,0 +1,133 @@
+{
+	"build_systems":
+	[
+		{
+			"file_regex": "(.+[^:]):(\\d+):(\\d+): (?:fatal )?((?:error|warning): .+)$",
+			"name": "imaplw (OSX)",
+			"shell_cmd": "cmake --build .",
+			"syntax": "Packages/CMakeBuilder/Syntax/Ninja.sublime-syntax",
+			"variants":
+			[
+				{
+					"name": "install/local",
+					"shell_cmd": "cmake --build . --target install/local"
+				},
+				{
+					"name": "install/strip",
+					"shell_cmd": "cmake --build . --target install/strip"
+				},
+				{
+					"name": "install",
+					"shell_cmd": "cmake --build . --target install"
+				},
+				{
+					"name": "list_install_components",
+					"shell_cmd": "cmake --build . --target list_install_components"
+				},
+				{
+					"name": "rebuild_cache",
+					"shell_cmd": "cmake --build . --target rebuild_cache"
+				},
+				{
+					"name": "SocketPool/install/local",
+					"shell_cmd": "cmake --build . --target SocketPool/install/local"
+				},
+				{
+					"name": "SocketPool/install/strip",
+					"shell_cmd": "cmake --build . --target SocketPool/install/strip"
+				},
+				{
+					"name": "SocketPool/install",
+					"shell_cmd": "cmake --build . --target SocketPool/install"
+				},
+				{
+					"name": "SocketPool/list_install_components",
+					"shell_cmd": "cmake --build . --target SocketPool/list_install_components"
+				},
+				{
+					"name": "SocketPool/rebuild_cache",
+					"shell_cmd": "cmake --build . --target SocketPool/rebuild_cache"
+				},
+				{
+					"name": "SocketPool/Pollster/install/local",
+					"shell_cmd": "cmake --build . --target SocketPool/Pollster/install/local"
+				},
+				{
+					"name": "SocketPool/Pollster/install/strip",
+					"shell_cmd": "cmake --build . --target SocketPool/Pollster/install/strip"
+				},
+				{
+					"name": "SocketPool/Pollster/install",
+					"shell_cmd": "cmake --build . --target SocketPool/Pollster/install"
+				},
+				{
+					"name": "SocketPool/Pollster/list_install_components",
+					"shell_cmd": "cmake --build . --target SocketPool/Pollster/list_install_components"
+				},
+				{
+					"name": "SocketPool/Pollster/rebuild_cache",
+					"shell_cmd": "cmake --build . --target SocketPool/Pollster/rebuild_cache"
+				},
+				{
+					"name": "src/install/local",
+					"shell_cmd": "cmake --build . --target src/install/local"
+				},
+				{
+					"name": "src/install/strip",
+					"shell_cmd": "cmake --build . --target src/install/strip"
+				},
+				{
+					"name": "src/install",
+					"shell_cmd": "cmake --build . --target src/install"
+				},
+				{
+					"name": "src/list_install_components",
+					"shell_cmd": "cmake --build . --target src/list_install_components"
+				},
+				{
+					"name": "src/rebuild_cache",
+					"shell_cmd": "cmake --build . --target src/rebuild_cache"
+				},
+				{
+					"name": "IMAPlw",
+					"shell_cmd": "cmake --build . --target IMAPlw"
+				},
+				{
+					"name": "SocketPool",
+					"shell_cmd": "cmake --build . --target SocketPool"
+				},
+				{
+					"name": "libSocketPool.a",
+					"shell_cmd": "cmake --build . --target libSocketPool.a"
+				},
+				{
+					"name": "libpollster.a",
+					"shell_cmd": "cmake --build . --target libpollster.a"
+				},
+				{
+					"name": "pollster",
+					"shell_cmd": "cmake --build . --target pollster"
+				},
+				{
+					"name": "clean",
+					"shell_cmd": "cmake --build . --target clean"
+				}
+			],
+			"working_dir": "$folder/build"
+		}
+	],
+	"folders":
+	[
+		{
+			"path": "."
+		}
+	],
+	"settings":
+	{
+		"cmake":
+		{
+			"build_folder": "$folder/build",
+			"generator": "Ninja"
+		}
+	}
+}

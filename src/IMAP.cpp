@@ -1,13 +1,17 @@
 #import "IMAP/DataProvider.hpp"
 #import <SocketPool.hpp>
-#import "IMAP/Providers.hpp"
+#import "IMAP/IMAPProvider.hpp"
 #import <iostream>
 
 class GAuthP : public AuthenticationProvider{
 public:
 	bool lookup(std::string username){ return true; }
 	bool authenticate(std::string username, std::string password){ return true; }
+	std::string SASL(struct tls* fd, std::string mechanism){ return ""; }
 	GAuthP() : AuthenticationProvider("AUTH=PLAIN"){}
+};
+class DAuthP : public DataProvider{
+public:
 };
 
 int main(int argc, char* argv[]){
@@ -19,7 +23,7 @@ int main(int argc, char* argv[]){
 	unsigned int port = 8080;
 	const char* address = "0.0.0.0";
 	IMAPProvider::Config c(true, false, "secure", "secure", "server.key", "server.crt");
-	IMAPProvider::IMAPProvider<GAuthP, DataProvider> p(c);
+	IMAPProvider::IMAPProvider<GAuthP, DAuthP> p(c);
 	SocketPool sp(port, address, atoi(argv[1]), atoi(argv[2]), p, std::chrono::minutes(5));
 	while(1){
 		sp.listen();
