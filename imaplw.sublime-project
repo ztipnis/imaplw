@@ -127,6 +127,10 @@
 		"cmake":
 		{
 			"build_folder": "$folder/build",
+			"command_line_overrides":
+			{
+				"CMAKE_BUILD_TYPE": "Debug"
+			},
 			"generator": "Ninja"
 		}
 	}

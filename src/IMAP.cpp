@@ -12,6 +12,21 @@ public:
 };
 class DAuthP : public DataProvider{
 public:
+	DAuthP() : DataProvider() {}
+	selectResp select(const std::string& user, const std::string& mailbox){ selectResp r; return r;};
+	bool createMbox(const std::string& user, const std::string& mailbox){ return true; };
+	bool hasSubFolders(const std::string& user, const std::string& mailbox){return true;};
+	bool hasAttrib(const std::string& user, const std::string& mailbox, const std::string& attrib){return true;};
+	bool addAttrib(const std::string& user, const std::string& mailbox, const std::string& attrib){return true;};
+	bool rmFolder(const std::string& user, const std::string& mailbox){return true;};
+	bool clear(const std::string& user, const std::string& mailbox){return true;};
+	bool rename(const std::string& user, const std::string& mailbox, const std::string& name){return true;};
+	bool addSub(const std::string& user, const std::string& mailbox){return true;};
+	bool rmSub(const std::string& user, const std::string& mailbox){return true;};
+	bool list(const std::string& user, const std::string& mailbox, std::vector<struct mailbox>& lres){return true;};
+	bool lsub(const std::string& user, const std::string& mailbox, std::vector<struct mailbox>& lres){return true;};
+	bool mailboxExists(const std::string& user, const std::string& mailbox){return true;};
+	bool append(const std::string& user, const std::string& mailbox, const std::string& messageData){return true;};
 };
 
 int main(int argc, char* argv[]){
