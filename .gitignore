@@ -49,3 +49,6 @@ _deps
 .ninja*
 include
 
+#MacOS
+.DS_Store
+
