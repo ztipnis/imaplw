@@ -13,6 +13,12 @@ project(${PROJECT_NAME} VERSION ${VERSION_NUM})
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-add_executable(IMAPlw IMAP.cpp)
+
+FIND_PACKAGE( Boost COMPONENTS locale REQUIRED )
 find_package(LibreSSL REQUIRED)
-target_link_libraries(IMAPlw SocketPool LibreSSL::TLS)
+
+
+INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
+
+add_executable(IMAPlw IMAP.cpp)
+target_link_libraries(IMAPlw SocketPool LibreSSL::TLS ${Boost_LIBRARIES})
