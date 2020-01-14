@@ -7,7 +7,7 @@
  *
  * You should have received a copy of the MIT License with
  * this file. If not, please write to "zatipnis@icloud.com"
- * or visit: https://zachrytipnis.com
+ * or visit: https://zacharytipnis.com
  *
  */
 #import <SocketPool.hpp>
@@ -15,6 +15,7 @@
 #include <boost/locale.hpp>
 #import "IMAP/DataModel.hpp"
 #import "IMAP/IMAPProvider.hpp"
+#include "cfgParser/Config.hpp"
 
 class GAuthP : public IMAPProvider::AuthenticationModel {
  public:
@@ -99,26 +100,35 @@ class DAuthP : public IMAPProvider::DataModel {
 };
 
 int main(int argc, char* argv[]) {
-  if (argc < 3) {
+  if (argc < 2) {
     std::cerr << "USAGE: " << argv[0] << " #clients #threads" << std::endl;
     exit(1);
   }
 
-  boost::locale::generator gen;
-  std::locale loc = gen("en_US.UTF-8"); 
-  std::locale::global(loc); 
+  Config cfg(argv[1]);
 
-  std::cout
-      << "Note: if # clients is not evently divisible by # threads, # clients "
-         "will be truncated to be distibuted evenly amongst threads."
-      << std::endl;
-  unsigned int port = 8080;
-  const char* address = "0.0.0.0";
-  IMAPProvider::ConfigModel c(true, false, "secure", "secure", "server.key",
-                              "server.crt");
+  boost::locale::generator gen;
+  std::locale loc;
+  std::string locale = cfg.get<String>("General", "Time");
+  if(locale != ""){
+    loc = gen(locale);
+  } else{
+    loc = gen("en_US.UTF-8");
+  }
+  std::locale::global(loc); 
+  unsigned int port = cfg.get<Numeric>("General", "Port");
+  const char* address = cfg.get<String>("General", "Address").c_str();
+  IMAPProvider::ConfigModel c(cfg.get<Boolean>("TLS", "Secure"),
+                              cfg.get<Boolean>("TLS", "StartTLS"),
+                              cfg.get<String>("TLS", "Versions").c_str(),
+                              cfg.get<String>("TLS", "Ciphers").c_str(),
+                              cfg.get<String>("TLS", "KeyPath").c_str(),
+                              cfg.get<String>("TLS", "CertPath").c_str());
   IMAPProvider::IMAPProvider<GAuthP, DAuthP> p(c);
-  SocketPool sp(port, address, atoi(argv[1]), atoi(argv[2]), p,
-                std::chrono::minutes(5));
+  SocketPool sp(port, address,
+                cfg.get<Numeric>("General", "Threads"),
+                cfg.get<Numeric>("General", "Clients"),
+                p, std::chrono::minutes(5));
   while (1) {
     sp.listen();
   }
