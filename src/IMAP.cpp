@@ -10,11 +10,11 @@
  * or visit: https://zacharytipnis.com
  *
  */
-#import <SocketPool.hpp>
-#import <iostream>
+#include <SocketPool.hpp>
+#include <iostream>
 #include <boost/locale.hpp>
-#import "IMAP/DataModel.hpp"
-#import "IMAP/IMAPProvider.hpp"
+#include "IMAP/DataModel.hpp"
+#include "IMAP/IMAPProvider.hpp"
 #include "cfgParser/Config.hpp"
 
 class GAuthP : public IMAPProvider::AuthenticationModel {
