@@ -76,6 +76,13 @@ public:
 	auto get(std::string section, std::string item){
 		return typeCast<T>(values[section + "::" + item]);
 	}
+	std::string debug(){
+		std::stringstream ss;
+		for(auto pair : values){
+			ss << pair.first << " : " << pair.second << std::endl;
+		}
+		return ss.str();
+	}
 };
 
 void Config::parse(std::string filePath){

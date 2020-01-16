@@ -13,11 +13,66 @@
 #include <SocketPool.hpp>
 #include <iostream>
 #include <boost/locale.hpp>
+#include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/utility/setup/file.hpp>
+#include <boost/log/utility/setup/console.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
 #include "IMAP/DataModel.hpp"
 #include "IMAP/IMAPProvider.hpp"
 #include "cfgParser/Config.hpp"
 #include "IMAP/DefaultProviders.hpp"
+
+
+namespace logging = boost::log;
+namespace keywords = boost::log::keywords;
+
+void init_logging(std::string filename, std::string format, std::string severity)
+{
+    logging::register_simple_formatter_factory<logging::trivial::severity_level, char>("Severity");
+    if(format == ""){
+      format = "[%TimeStamp%] [%ThreadID%] [%Severity%] %Message%";
+    }
+    if(severity == ""){
+      #ifdef CMAKE_BUILD_TYPE
+        #if CMAKE_BUILD_TYPE == Release
+          severity = "warning";
+        #else
+          severity = "trace";
+        #endif
+      #else
+          severity = "debug";
+      #endif
+    }
+    if(filename != "" && filename != "stdout" && filename != "cerr"){
+      logging::add_file_log
+      (
+          keywords::file_name = filename,
+          keywords::auto_flush = true,
+          keywords::format = format
+      );
+    }else{
+      logging::add_console_log
+      (
+          (filename == "cerr" ? std::cerr : std::cout),
+          keywords::auto_flush = true,
+          keywords::format = format
+      );
+    }
+    if(severity != ""){
+      boost::log::trivial::severity_level logSeverity;
+      std::istringstream{severity} >> logSeverity;
+      logging::core::get()->set_filter
+      (
+          logging::trivial::severity >= logSeverity
+      );
+
+    }
+
+    logging::add_common_attributes();
+}
+
 
 int main(int argc, char* argv[]) {
   if (argc < 2) {
@@ -26,6 +81,8 @@ int main(int argc, char* argv[]) {
   }
   try{
     Config cfg(argv[1]);
+    std::string logging_out = cfg.get<String>("Logging", "Output");
+    init_logging(logging_out, cfg.get<String>("Logging", "Format"), cfg.get<String>("Logging", "Level"));
     boost::locale::generator gen;
     std::locale loc;
     std::string locale = cfg.get<String>("General", "Time");
@@ -48,6 +105,8 @@ int main(int argc, char* argv[]) {
                   cfg.get<Numeric>("General", "Threads"),
                   cfg.get<Numeric>("General", "Clients"),
                   p, std::chrono::minutes(5));
+    BOOST_LOG_TRIVIAL(trace) << "CONFIG SETTINGS:" << std::endl << cfg.debug();
+    BOOST_LOG_TRIVIAL(info) << "IMAPlw Listening on " << cfg.get<String>("General", "Address") << ":" << cfg.get<Numeric>("General", "Port");
     while (1) {
       sp.listen();
     }
