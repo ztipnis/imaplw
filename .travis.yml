@@ -4,6 +4,7 @@ language: cpp
 matrix:
   include:
     - os: linux
+      sudo: required
       dist: bionic
       addons:
         apt:
@@ -23,7 +24,7 @@ compiler:
   - clang
 
 before_install:
-  - if [ "$TRAVIS_OS_NAME" != "osx" ]; then git clone https://github.com/libressl-portable/portable && cd portable && ./autogen.sh && ./configure --prefix=/usr/local/libressl --with-openssldir=/usr/local/libressl && make -j4 && make install ; fi
+  - if [ "$TRAVIS_OS_NAME" != "osx" ]; then git clone https://github.com/libressl-portable/portable && cd portable && ./autogen.sh && ./configure --prefix=/usr/local/libressl --with-openssldir=/usr/local/libressl && make -j4 && sudo make install ; fi
 
 script:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ./build_osx_brew.sh -GNinja ; else ./setup_build.sh -GNinja ; fi

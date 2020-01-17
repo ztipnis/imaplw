@@ -54,3 +54,8 @@ ENDIF(LIBUUID_FOUND)
 # add_test(SimpleTest SimpleTest)
 
 target_compile_features(IMAPlw PUBLIC cxx_std_17)
+
+set(CMAKE_CXX_FLAGS "-g -std=c++17 -Werror \
+                     -Wno-error=variadic-macros \
+                     -Werror=implicit-fallthrough"
+                    CACHE STRING "compiler flags")
