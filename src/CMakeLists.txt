@@ -53,4 +53,4 @@ ENDIF(LIBUUID_FOUND)
 # target_link_libraries(IMAPlw gtest gmock gtest_main)
 # add_test(SimpleTest SimpleTest)
 
-target_compile_features(IMAPlw PUBLIC cxx_std_14)
+target_compile_features(IMAPlw PUBLIC cxx_std_17)
