@@ -4,16 +4,39 @@ language: cpp
 matrix:
   include:
     - os: linux
+      compiler: gcc
       cache: bundler
-      sudo: required
       dist: bionic
+      env:
+         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
       addons:
         apt:
+          sources:
+            - ubuntu-toolchain-r-test
           packages:
+            - g++-7
             - libboost-all-dev
-            - ninja
-    - os: osx
+            - ninja-build
+    - os: linux
+      compiler: clang
       cache: bundler
+      dist: bionic
+      env:
+         - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-7
+            - libboost-all-dev
+            - ninja-build
+    - os: osx
+      compiler: g++
+      cache: bundler
+      osx_image: xcode11.3
+      env:
+         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
       addons:
         homebrew:
           packages:
@@ -21,11 +44,9 @@ matrix:
           - boost
           - ninja
 
-compiler:
-  - gcc
-  - clang
 
 before_install:
+  - eval "${MATRIX_EVAL}"
   - if [ "$TRAVIS_OS_NAME" != "osx" ]; then git clone https://github.com/libressl-portable/portable && cd portable && ./autogen.sh && ./configure && make -j4 && sudo make install ; fi
 
 script:
