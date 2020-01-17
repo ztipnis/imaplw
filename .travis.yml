@@ -13,7 +13,7 @@ addons:
     packages:
       - libboost-all-dev
 before_install:
-  - if [ "$TRAVIS_OS_NAME" != "osx" ]; then git clone https://github.com/libressl-portable/portable && cd portable && ./configure --prefix=/usr/local/libressl --with-openssldir=/usr/local/libressl && make && make install ; fi
+  - if [ "$TRAVIS_OS_NAME" != "osx" ]; then git clone https://github.com/libressl-portable/portable && cd portable && ./autogen.sh && ./configure --prefix=/usr/local/libressl --with-openssldir=/usr/local/libressl && make && make install ; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update          ; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install libressl; fi
 
