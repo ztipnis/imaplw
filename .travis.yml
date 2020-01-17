@@ -1,24 +1,27 @@
 language: cpp
 
-os:
-  - linux
-  - osx
+
+matrix:
+  include:
+    - os: linux
+      dist: bionic
+      addons:
+        apt:
+          packages:
+            - libboost-all-dev
+            - ninja
+    - os: osx
+      addons:
+        homebrew:
+          packages:
+          - libressl
+          - boost
+          - ninja
 
 compiler:
   - gcc
   - clang
 
-addons:
-  apt:
-    packages:
-      - libboost-all-dev
-      - ninja
-addons:
-  homebrew:
-    packages:
-    - libressl
-    - boost
-    - ninja
 before_install:
   - if [ "$TRAVIS_OS_NAME" != "osx" ]; then git clone https://github.com/libressl-portable/portable && cd portable && ./autogen.sh && ./configure --prefix=/usr/local/libressl --with-openssldir=/usr/local/libressl && make -j4 && make install ; fi
 
