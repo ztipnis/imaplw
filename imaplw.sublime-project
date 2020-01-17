@@ -9,8 +9,32 @@
 			"variants":
 			[
 				{
-					"name": "install/local",
-					"shell_cmd": "cmake --build . --target install/local"
+					"name": "",
+					"shell_cmd": "cmake --build . --target "
+				},
+				{
+					"name": "",
+					"shell_cmd": "cmake --build . --target "
+				},
+				{
+					"name": "",
+					"shell_cmd": "cmake --build . --target "
+				},
+				{
+					"name": "",
+					"shell_cmd": "cmake --build . --target "
+				},
+				{
+					"name": "",
+					"shell_cmd": "cmake --build . --target "
+				},
+				{
+					"name": "",
+					"shell_cmd": "cmake --build . --target "
+				},
+				{
+					"name": "-- Build files have been written to",
+					"shell_cmd": "cmake --build . --target -- Build files have been written to"
 				},
 				{
 					"name": "install/strip",
@@ -29,8 +53,12 @@
 					"shell_cmd": "cmake --build . --target rebuild_cache"
 				},
 				{
-					"name": "SocketPool/install/local",
-					"shell_cmd": "cmake --build . --target SocketPool/install/local"
+					"name": "install/local",
+					"shell_cmd": "cmake --build . --target install/local"
+				},
+				{
+					"name": "test",
+					"shell_cmd": "cmake --build . --target test"
 				},
 				{
 					"name": "SocketPool/install/strip",
@@ -45,12 +73,16 @@
 					"shell_cmd": "cmake --build . --target SocketPool/list_install_components"
 				},
 				{
-					"name": "SocketPool/rebuild_cache",
-					"shell_cmd": "cmake --build . --target SocketPool/rebuild_cache"
+					"name": "SocketPool/install/local",
+					"shell_cmd": "cmake --build . --target SocketPool/install/local"
 				},
 				{
-					"name": "SocketPool/Pollster/install/local",
-					"shell_cmd": "cmake --build . --target SocketPool/Pollster/install/local"
+					"name": "SocketPool/test",
+					"shell_cmd": "cmake --build . --target SocketPool/test"
+				},
+				{
+					"name": "SocketPool/rebuild_cache",
+					"shell_cmd": "cmake --build . --target SocketPool/rebuild_cache"
 				},
 				{
 					"name": "SocketPool/Pollster/install/strip",
@@ -69,8 +101,12 @@
 					"shell_cmd": "cmake --build . --target SocketPool/Pollster/rebuild_cache"
 				},
 				{
-					"name": "src/install/local",
-					"shell_cmd": "cmake --build . --target src/install/local"
+					"name": "SocketPool/Pollster/install/local",
+					"shell_cmd": "cmake --build . --target SocketPool/Pollster/install/local"
+				},
+				{
+					"name": "SocketPool/Pollster/test",
+					"shell_cmd": "cmake --build . --target SocketPool/Pollster/test"
 				},
 				{
 					"name": "src/install/strip",
@@ -87,6 +123,14 @@
 				{
 					"name": "src/rebuild_cache",
 					"shell_cmd": "cmake --build . --target src/rebuild_cache"
+				},
+				{
+					"name": "src/install/local",
+					"shell_cmd": "cmake --build . --target src/install/local"
+				},
+				{
+					"name": "src/test",
+					"shell_cmd": "cmake --build . --target src/test"
 				},
 				{
 					"name": "IMAPlw",
