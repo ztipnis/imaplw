@@ -5,7 +5,10 @@ matrix:
   include:
     - os: linux
       compiler: gcc
-      cache: bundler
+      cache:
+        ccache: true
+        directories:
+          - /tmp/libressl
       dist: bionic
       env:
          - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
@@ -19,7 +22,10 @@ matrix:
             - ninja-build
     - os: linux
       compiler: clang
-      cache: bundler
+      cache:
+        ccache: true
+        directories:
+          - /tmp/libressl
       dist: bionic
       env:
          - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
@@ -32,25 +38,28 @@ matrix:
             - libboost-all-dev
             - ninja-build
     - os: osx
-      compiler: g++
-      cache: bundler
+      compiler: cmake
+      cache:
+        ccache: true
       osx_image: xcode11.3
       env:
          - MATRIX_EVAL=""
+         - LIBRESSL_ROOT_DIR="/usr/local/opt/libressl"
+         - PATH="/usr/local/opt/ccache/libexec:$PATH"
       addons:
         homebrew:
           packages:
           - libressl
           - boost
           - ninja
+          - ccache
 
 
 before_install:
   - eval "${MATRIX_EVAL}"
-  - if [ "$TRAVIS_OS_NAME" != "osx" ]; then git clone https://github.com/libressl-portable/portable && cd portable && ./autogen.sh && ./configure && make -j4 && sudo make install ; fi
-
+install:
+  - if [ "$TRAVIS_OS_NAME" != "osx" ]; then git clone https://github.com/libressl-portable/portable /tmp/libressl && ( pushd /tmp/libressl && ./autogen.sh && ./configure --prefix=/usr && make -j4 && sudo make install && popd ) ; fi
 script:
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then LIBRESSL_ROOT_DIR=/usr/local/opt/libressl ; fi
   - git submodule update --remote --recursive --init
   - mkdir -p ./build
   - cd build
