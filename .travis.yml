@@ -58,7 +58,7 @@ matrix:
 before_install:
   - eval "${MATRIX_EVAL}"
 install:
-  - if [ "$TRAVIS_OS_NAME" != "osx" ]; then git clone https://github.com/libressl-portable/portable /tmp/libressl && ( pushd /tmp/libressl && ./autogen.sh && ./configure --prefix=/usr && make -j4 && sudo make install && popd ) ; fi
+  - if [ "$TRAVIS_OS_NAME" != "osx" ]; then set +e && git clone https://github.com/libressl-portable/portable /tmp/libressl || true && set -e && ( pushd /tmp/libressl && ./autogen.sh && ./configure --prefix=/usr && make -j4 && sudo make install && popd ) ; fi
 script:
   - git submodule update --remote --recursive --init
   - mkdir -p ./build
