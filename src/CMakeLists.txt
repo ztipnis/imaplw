@@ -47,7 +47,7 @@ ENDIF(LIBUUID_FOUND)
 add_executable(IMAPlw IMAP.cpp)
 target_link_libraries(IMAPlw PRIVATE SocketPool LibreSSL::TLS ${Boost_LIBRARIES})
 IF(LIBUUID_FOUND)
-	target_link_libraries(IMAPlw ${LIBUUID_LIBRARIES})
+	target_link_libraries(IMAPlw PRIVATE ${LIBUUID_LIBRARIES})
 ENDIF(LIBUUID_FOUND)
 
 # target_link_libraries(IMAPlw gtest gmock gtest_main)
