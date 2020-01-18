@@ -60,7 +60,7 @@ matrix:
 before_install:
   - eval "${MATRIX_EVAL}"
 install:
-  - if [ "$TRAVIS_OS_NAME" != "osx" ]; then set +e && git clone https://github.com/libressl-portable/portable /tmp/libressl || true && set -e && mkdir -p /tmp/libressl/build && pushd /tmp/libressl/build && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr -GNinja .. && ninja && ninja install && popd ; fi
+  - if [ "$TRAVIS_OS_NAME" != "osx" ]; then set +e && git clone https://github.com/libressl-portable/portable /tmp/libressl || true && set -e && mkdir -p /tmp/libressl/build && pushd /tmp/libressl/build && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr -GNinja .. && ninja && sudo ninja install && popd ; fi
 script:
   - git submodule update --remote --recursive --init
   - mkdir -p ./build
