@@ -6,6 +6,7 @@ matrix:
     - os: linux
       compiler: gcc
       cache:
+        apt: true
         ccache: true
         directories:
           - /tmp/libressl
@@ -23,6 +24,7 @@ matrix:
     - os: linux
       compiler: clang
       cache:
+        apt: true
         ccache: true
         directories:
           - /tmp/libressl

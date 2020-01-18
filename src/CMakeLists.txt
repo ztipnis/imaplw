@@ -43,15 +43,19 @@ ELSE(LIBUUID_FOUND)
 	INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIRS})
 ENDIF(LIBUUID_FOUND)
 
+#Find Threads
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
 
 add_executable(IMAPlw IMAP.cpp)
-target_link_libraries(IMAPlw PRIVATE SocketPool LibreSSL::TLS ${Boost_LIBRARIES})
+target_link_libraries(IMAPlw PRIVATE SocketPool LibreSSL::TLS ${Boost_LIBRARIES} Threads::Threads)
 IF(LIBUUID_FOUND)
 	target_link_libraries(IMAPlw PRIVATE ${LIBUUID_LIBRARIES})
 ENDIF(LIBUUID_FOUND)
 
 # target_link_libraries(IMAPlw gtest gmock gtest_main)
 # add_test(SimpleTest SimpleTest)
+
 
 target_compile_features(IMAPlw PUBLIC cxx_std_17)
 
