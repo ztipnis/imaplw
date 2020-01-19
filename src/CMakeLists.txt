@@ -24,7 +24,16 @@ add_definitions(-DBOOST_ALL_DYN_LINK)
 FIND_PACKAGE(Boost 1.54 COMPONENTS locale log log_setup REQUIRED)
 
 #find LibreSSL (LibTLS)
-find_package(LibreSSL REQUIRED)
+find_package(LibreSSL)
+if(NOT LIBRESSL_FOUND)
+	include(ExternalProject)
+	ExternalProject_Add(LibreSSL
+    	URL https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-3.0.2.tar.gz 
+	)
+	ExternalProject_Get_Property(LibreSSL INSTALL_DIR)
+	set(LIBRESSL_INCLUDE_DIR ${INSTALL_DIR}/include CACHE INTERNAL)
+	set(LIBRESSL_LIBRARIES ${INSTALL_DIR}/lib/libcrypto.a ${INSTALL_DIR}/lib/libssl.a ${INSTALL_DIR}/lib/libtls.a CACHE INTERNAL)
+endif(NOT LIBRESSL_FOUND)
 
 #find LibUUID (for uuid generation)
 #OSX (& BSD?) have LibUUID functionality built in, and do not require linking
@@ -38,13 +47,17 @@ endif("${CMAKE_SYSTEM}" MATCHES "Linux")
 
 #Link if found otherwise don't
 IF(LIBUUID_FOUND)
-	INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIRS} ${LIBRESSL_INCLUDE_DIR} LIBUUID_INCLUDE_DIRS)
+	INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIRS} ${LIBRESSL_INCLUDE_DIR} ${LIBUUID_INCLUDE_DIRS})
 ELSE(LIBUUID_FOUND)
 	INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIRS} ${LIBRESSL_INCLUDE_DIR})
 ENDIF(LIBUUID_FOUND)
 
 add_executable(IMAPlw IMAP.cpp)
+
 target_link_libraries(IMAPlw PRIVATE SocketPool ${LIBRESSL_LIBRARIES} ${Boost_LIBRARIES})
+
+
+
 IF(LIBUUID_FOUND)
 	target_link_libraries(IMAPlw PRIVATE ${LIBUUID_LIBRARIES})
 ENDIF(LIBUUID_FOUND)
