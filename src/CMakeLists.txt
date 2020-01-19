@@ -26,7 +26,11 @@ FIND_PACKAGE(Boost 1.54 COMPONENTS locale log log_setup REQUIRED)
 #find LibreSSL (LibTLS)
 find_package(LibreSSL)
 if(NOT LIBRESSL_FOUND)
-	include(GetLibreSSL)
+	if(FETCH_LIBRESSL)
+		include(GetLibreSSL)
+	else(FETCH_LIBRESSL)
+		message(FATAL_ERROR "LibreSSL not found. If you would like to automagically download, try running CMake with \"-DFETCH_LIBRESSL=True\"")
+	endif(FETCH_LIBRESSL)
 endif(NOT LIBRESSL_FOUND)
 
 #find LibUUID (for uuid generation)
@@ -48,7 +52,7 @@ ENDIF(LIBUUID_FOUND)
 
 add_executable(IMAPlw IMAP.cpp)
 
-target_link_libraries(IMAPlw PRIVATE SocketPool ${LIBRESSL_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(IMAPlw PRIVATE SocketPool LibreSSL::TLS ${Boost_LIBRARIES})
 
 
 

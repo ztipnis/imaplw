@@ -1,7 +1,13 @@
 include(ExternalProject)
+message(STATUS "Will fetch LibreSSL as part of build")
 ExternalProject_Add(Project_LibreSSL
     URL https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-3.0.2.tar.gz 
+    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/libressl-3.0.2
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/libressl-3.0.2
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/libressl-3.0.2 -G${CMAKE_GENERATOR}
+    BUILD_BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/libressl-3.0.2/lib/libcrypto.a
+    BUILD_BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/libressl-3.0.2/lib/libssl.a
+    BUILD_BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/libressl-3.0.2/lib/libtls.a
 )
 ExternalProject_Get_Property(Project_LibreSSL INSTALL_DIR)
 set(LIBRESSL_INCLUDE_DIR ${INSTALL_DIR}/include)
@@ -9,14 +15,13 @@ set(LIBRESSL_CRYPTO_LIBRARY ${INSTALL_DIR}/lib/libcrypto.a CACHE INTERNAL "Libre
 set(LIBRESSL_SSL_LIBRARY ${INSTALL_DIR}/lib/libssl.a CACHE INTERNAL "LibreSSL SSL Library Path")
 set(LIBRESSL_TLS_LIBRARY ${INSTALL_DIR}/lib/libtls.a CACHE INTERNAL "LibreSSL TLS Library Path")
 # Set LibreSSL::Crypto
-if(NOT TARGET LibreSSL::Crypto AND EXISTS "${LIBRESSL_CRYPTO_LIBRARY}")
+if(NOT TARGET LibreSSL::Crypto)
     # Add Library
-    add_library(LibreSSL::Crypto UNKNOWN IMPORTED)
+    add_library(LibreSSL::Crypto STATIC IMPORTED)
     # Set Properties
     set_target_properties(
         LibreSSL::Crypto
         PROPERTIES
-            INTERFACE_INCLUDE_DIRECTORIES "${LIBRESSL_INCLUDE_DIR}"
             IMPORTED_LINK_INTERFACE_LANGUAGES "C"
             IMPORTED_LOCATION "${LIBRESSL_CRYPTO_LIBRARY}"
     )
@@ -24,14 +29,13 @@ if(NOT TARGET LibreSSL::Crypto AND EXISTS "${LIBRESSL_CRYPTO_LIBRARY}")
 endif() # LibreSSL::Crypto
 
 # Set LibreSSL::SSL
-if(NOT TARGET LibreSSL::SSL AND EXISTS "${LIBRESSL_SSL_LIBRARY}")
+if(NOT TARGET LibreSSL::SSL)
     # Add Library
-    add_library(LibreSSL::SSL UNKNOWN IMPORTED)
+    add_library(LibreSSL::SSL STATIC IMPORTED)
     # Set Properties
     set_target_properties(
         LibreSSL::SSL
         PROPERTIES
-            INTERFACE_INCLUDE_DIRECTORIES "${LIBRESSL_INCLUDE_DIR}"
             IMPORTED_LINK_INTERFACE_LANGUAGES "C"
             IMPORTED_LOCATION "${LIBRESSL_SSL_LIBRARY}"
             INTERFACE_LINK_LIBRARIES LibreSSL::Crypto
@@ -39,12 +43,11 @@ if(NOT TARGET LibreSSL::SSL AND EXISTS "${LIBRESSL_SSL_LIBRARY}")
     add_dependencies(LibreSSL::SSL Project_LibreSSL)
 endif() # LibreSSL::SSL
 # Set LibreSSL::TLS
-if(NOT TARGET LibreSSL::TLS AND EXISTS "${LIBRESSL_TLS_LIBRARY}")
-    add_library(LibreSSL::TLS UNKNOWN IMPORTED)
+if(NOT TARGET LibreSSL::TLS)
+    add_library(LibreSSL::TLS STATIC IMPORTED)
     set_target_properties(
         LibreSSL::TLS
         PROPERTIES
-            INTERFACE_INCLUDE_DIRECTORIES "${LIBRESSL_INCLUDE_DIR}"
             IMPORTED_LINK_INTERFACE_LANGUAGES "C"
             IMPORTED_LOCATION "${LIBRESSL_TLS_LIBRARY}"
             INTERFACE_LINK_LIBRARIES LibreSSL::SSL
