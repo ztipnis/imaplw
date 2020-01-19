@@ -1,4 +1,4 @@
-# imaplw - WIP
+# imaplw - WIP [![Build Status](https://travis-ci.com/ztipnis/imaplw.svg?branch=master)](https://travis-ci.com/ztipnis/imaplw)
 Lightweight IMAP Server
 
 
