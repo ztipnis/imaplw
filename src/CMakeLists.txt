@@ -26,17 +26,7 @@ FIND_PACKAGE(Boost 1.54 COMPONENTS locale log log_setup REQUIRED)
 #find LibreSSL (LibTLS)
 find_package(LibreSSL)
 if(NOT LIBRESSL_FOUND)
-	include(ExternalProject)
-	ExternalProject_Add(LibreSSL
-    	URL https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-3.0.2.tar.gz 
-	)
-	ExternalProject_Get_Property(LibreSSL INSTALL_DIR)
-	set(LIBRESSL_INCLUDE_DIR ${INSTALL_DIR}/include)
-	set(LIBRESSL_CRYPTO_LIBRARY ${INSTALL_DIR}/lib/libcrypto.a CACHE INTERNAL "LibreSSL CRYTO Library Path")
-	set(LIBRESSL_SSL_LIBRARY ${INSTALL_DIR}/lib/libssl.a CACHE INTERNAL "LibreSSL SSL Library Path")
-	set(LIBRESSL_TLS_LIBRARY ${INSTALL_DIR}/lib/libtls.a CACHE INTERNAL "LibreSSL TLS Library Path")
-	set(LIBRESSL_LIBRARIES ${LIBRESSL_CRYPTO_LIBRARY} ${LIBRESSL_SSL_LIBRARY} ${LIBRESSL_TLS_LIBRARY})
-	mark_as_advanced(LIBRESSL_INCLUDE_DIR LIBRESSL_LIBRARIES LIBRESSL_CRYPTO_LIBRARY LIBRESSL_SSL_LIBRARY LIBRESSL_TLS_LIBRARY)
+	include(GetLibreSSL)
 endif(NOT LIBRESSL_FOUND)
 
 #find LibUUID (for uuid generation)
