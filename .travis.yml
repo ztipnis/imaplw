@@ -8,8 +8,6 @@ matrix:
       cache:
         apt: true
         ccache: true
-        directories:
-          - /tmp/libressl
       dist: bionic
       env:
          - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
@@ -25,8 +23,6 @@ matrix:
       cache:
         apt: true
         ccache: true
-        directories:
-          - /tmp/libressl
       dist: bionic
       env:
          - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
