@@ -55,7 +55,7 @@ matrix:
 before_install:
   - eval "${MATRIX_EVAL}"
 install:
-  - if [ "$TRAVIS_OS_NAME" != "osx" ]; then mkdir -p /tmp/libressl/build && curl -L -0 libressl.tar.gz https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-3.0.2.tar.gz | --strip-components=1 -zx -C /tmp/libressl && pushd /tmp/libressl/build && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr/local/opt/libressl -GNinja .. && ninja && sudo ninja install && popd ; fi
+  - if [ "$TRAVIS_OS_NAME" != "osx" ]; then mkdir -p /tmp/libressl/build && curl -L -0 libressl.tar.gz https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-3.0.2.tar.gz | tar --strip-components=1 -zx -C /tmp/libressl && pushd /tmp/libressl/build && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr/local/opt/libressl -GNinja .. && ninja && sudo ninja install && popd ; fi
 script:
   - git submodule update --remote --recursive --init
   - mkdir -p ./build
