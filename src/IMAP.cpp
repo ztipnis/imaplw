@@ -28,49 +28,49 @@
 namespace logging = boost::log;
 namespace keywords = boost::log::keywords;
 
-void init_logging(std::string filename, std::string format, std::string severity)
-{
-    logging::register_simple_formatter_factory<logging::trivial::severity_level, char>("Severity");
-    if(format == ""){
-      format = "[%TimeStamp%] [%ThreadID%] [%Severity%] %Message%";
-    }
-    if(severity == ""){
-      #ifdef CMAKE_BUILD_TYPE
-        #if CMAKE_BUILD_TYPE == Release
-          severity = "warning";
-        #else
-          severity = "trace";
-        #endif
+void init_logging(const std::string& _filename, const std::string& _format, const std::string& _severity){
+  std::string filename(_filename), format(_format), severity(_severity);
+  logging::register_simple_formatter_factory<logging::trivial::severity_level, char>("Severity");
+  if(format == ""){
+    format = "[%TimeStamp%] [%ThreadID%] [%Severity%] %Message%";
+  }
+  if(severity == ""){
+    #ifdef CMAKE_BUILD_TYPE
+      #if CMAKE_BUILD_TYPE == Release
+        severity = "warning";
       #else
-          severity = "debug";
+        severity = "trace";
       #endif
-    }
-    if(filename != "" && filename != "stdout" && filename != "cerr"){
-      logging::add_file_log
-      (
-          keywords::file_name = filename,
-          keywords::auto_flush = true,
-          keywords::format = format
-      );
-    }else{
-      logging::add_console_log
-      (
-          (filename == "cerr" ? std::cerr : std::cout),
-          keywords::auto_flush = true,
-          keywords::format = format
-      );
-    }
-    if(severity != ""){
-      boost::log::trivial::severity_level logSeverity;
-      std::istringstream{severity} >> logSeverity;
-      logging::core::get()->set_filter
-      (
-          logging::trivial::severity >= logSeverity
-      );
+    #else
+        severity = "debug";
+    #endif
+  }
+  if(filename != "" && filename != "stdout" && filename != "cerr"){
+    logging::add_file_log
+    (
+        keywords::file_name = filename,
+        keywords::auto_flush = true,
+        keywords::format = format
+    );
+  }else{
+    logging::add_console_log
+    (
+        (filename == "cerr" ? std::cerr : std::cout),
+        keywords::auto_flush = true,
+        keywords::format = format
+    );
+  }
+  if(severity != ""){
+    boost::log::trivial::severity_level logSeverity;
+    std::istringstream{severity} >> logSeverity;
+    logging::core::get()->set_filter
+    (
+        logging::trivial::severity >= logSeverity
+    );
 
-    }
+  }
 
-    logging::add_common_attributes();
+  logging::add_common_attributes();
 }
 
 
