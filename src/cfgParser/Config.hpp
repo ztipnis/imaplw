@@ -15,7 +15,7 @@
 #include <iomanip>
 #include <chrono>
 #include <unordered_map>
-#include <fstream>  
+#include <fstream>
 #include <string>
 
 #ifndef __H_CONFIG_PARSER__
@@ -33,7 +33,7 @@ typename std::enable_if<T == String, std::string>::type typeCast(std::string val
 	return value;
 }
 template <cfgType T>
-typename std::enable_if<T == Boolean, bool>::type typeCast(std::string value){
+typename std::enable_if<T == Boolean, bool>::type typeCast(const std::string& value){
 	return value == "True" || value == "true";
 } 
 
@@ -69,7 +69,7 @@ private:
 	void parse(std::string);
 	std::unordered_map<std::string, std::string> values;
 public:
-	Config(std::string file){
+	explicit Config(const std::string& file){
 		parse(file);
 	}
 	template <cfgType T>
