@@ -107,6 +107,7 @@ int main(int argc, char* argv[]) {
                   p, std::chrono::minutes(5));
     BOOST_LOG_TRIVIAL(trace) << "CONFIG SETTINGS:" << std::endl << cfg.debug();
     BOOST_LOG_TRIVIAL(info) << "IMAPlw Listening on " << cfg.get<String>("General", "Address") << ":" << cfg.get<Numeric>("General", "Port");
+    // signal(SIGPIPE, SIG_IGN); //Disable SIGPIPES
     while (1) {
       sp.listen();
     }

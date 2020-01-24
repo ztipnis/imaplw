@@ -133,6 +133,30 @@
 					"shell_cmd": "cmake --build . --target src/test"
 				},
 				{
+					"name": "test/install/strip",
+					"shell_cmd": "cmake --build . --target test/install/strip"
+				},
+				{
+					"name": "test/install",
+					"shell_cmd": "cmake --build . --target test/install"
+				},
+				{
+					"name": "test/list_install_components",
+					"shell_cmd": "cmake --build . --target test/list_install_components"
+				},
+				{
+					"name": "test/rebuild_cache",
+					"shell_cmd": "cmake --build . --target test/rebuild_cache"
+				},
+				{
+					"name": "test/install/local",
+					"shell_cmd": "cmake --build . --target test/install/local"
+				},
+				{
+					"name": "test/test",
+					"shell_cmd": "cmake --build . --target test/test"
+				},
+				{
 					"name": "IMAPlw",
 					"shell_cmd": "cmake --build . --target IMAPlw"
 				},
@@ -147,6 +171,14 @@
 				{
 					"name": "libpollster.a",
 					"shell_cmd": "cmake --build . --target libpollster.a"
+				},
+				{
+					"name": "miniz",
+					"shell_cmd": "cmake --build . --target miniz"
+				},
+				{
+					"name": "miniz_test",
+					"shell_cmd": "cmake --build . --target miniz_test"
 				},
 				{
 					"name": "pollster",
