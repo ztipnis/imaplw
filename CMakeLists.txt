@@ -81,6 +81,9 @@ include_directories(SocketPool)
 #Build the SocketPool Static Library to link
 add_subdirectory(SocketPool)
 
+#ADD PThread?
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+
 #Build IMAPlw (See src/CMakeLists.txt for more info)
 add_subdirectory(src)
 

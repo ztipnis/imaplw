@@ -9,34 +9,6 @@
 			"variants":
 			[
 				{
-					"name": "",
-					"shell_cmd": "cmake --build . --target "
-				},
-				{
-					"name": "",
-					"shell_cmd": "cmake --build . --target "
-				},
-				{
-					"name": "",
-					"shell_cmd": "cmake --build . --target "
-				},
-				{
-					"name": "",
-					"shell_cmd": "cmake --build . --target "
-				},
-				{
-					"name": "",
-					"shell_cmd": "cmake --build . --target "
-				},
-				{
-					"name": "",
-					"shell_cmd": "cmake --build . --target "
-				},
-				{
-					"name": "-- Build files have been written to",
-					"shell_cmd": "cmake --build . --target -- Build files have been written to"
-				},
-				{
 					"name": "install/strip",
 					"shell_cmd": "cmake --build . --target install/strip"
 				},
