@@ -9,10 +9,6 @@ This is achieved mainly through:
 *   MVC-esq architecture: The program is broken up into a command parser/router (IMAPProvider), an Authentication Manager, and a Data Manager. The Authentiction and Data managers are abstract classes which are subclassed to implement the actual functionality.
 *   Modern C++ (17) with a focus on code readability over all else.
 *   Event-based architecture achieved through EPoll and KQueue
-    *   TODO: Port from custom polling/socket class to libevent/libuv
 
 ## A Note on Licensing
 This project relies on LibreSSL and Boost for some minor parts of its functionality. LibreSSL and Boost are each licensed under permissive licenses, and the remainder of the code is licensed under the MIT License. For license inquiries, please open an issue. For more info on the specific licenses, see LibreSSL.License, Boost.License, and LICENSE
-
-## Help Wanted
-I am a student first, and work on this in my free time. I strive to write the highest quality code, and I do my best to push forward with this project and keep it maintained. That said, I lack experience in certain areas. If you happen across this project and have C++ experience, please feel free to read through the codebase and fix any issues you may see.
