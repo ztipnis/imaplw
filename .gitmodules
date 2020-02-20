@@ -1,5 +1,5 @@
 [submodule "SocketPool"]
 	path = SocketPool
-	url = https://github.com/ztipnis/SocketPool
+	url = git@github.com:ztipnis/SocketPool.git
 	branch = master
 	update = rebase
