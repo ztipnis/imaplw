@@ -71,9 +71,9 @@ before_install:
   - test -n $CXX && unset CXX
 
 script:
-  - sed -e 's/git@github.com:/https:\/\/github.com\//' -i '' .gitmodules
+  - sed -e 's/git@github.com:/https:\/\/github.com\//' -i '' .gitmodules || true
   - git submodule update --init
-  - pushd SocketPool && sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules && popd
+  - pushd SocketPool && sed -e 's/git@github.com:/https:\/\/github.com\//' -i '' .gitmodules || true && popd
   - git submodule update --remote --recursive --init
   - mkdir -p ./build
   - cd build
