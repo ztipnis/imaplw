@@ -1,6 +1,5 @@
 language: cpp
 
-
 matrix:
   include:
     - os: linux
@@ -62,10 +61,17 @@ matrix:
 
 before_cache:
   - brew cleanup
+
+git:
+  submodules: false
+
 before_install:
+  - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
+  - git submodule update --init --recursive
   - eval "${MATRIX_EVAL}"
   - test -n $CC  && unset CC
   - test -n $CXX && unset CXX
+
 script:
   - git submodule update --remote --recursive --init
   - mkdir -p ./build
