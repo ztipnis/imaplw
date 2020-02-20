@@ -66,15 +66,14 @@ git:
   submodules: false
 
 before_install:
-  - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
-  - git submodule update --init
-  - pushd SocketPool && sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules && popd
-  - git submodule update --init --recursive
   - eval "${MATRIX_EVAL}"
   - test -n $CC  && unset CC
   - test -n $CXX && unset CXX
 
 script:
+  - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
+  - git submodule update --init
+  - pushd SocketPool && sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules && popd
   - git submodule update --remote --recursive --init
   - mkdir -p ./build
   - cd build
