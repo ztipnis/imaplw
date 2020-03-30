@@ -7,6 +7,7 @@ if(CCACHE_PROGRAM)
     set(C_LAUNCHER   "${CCACHE_PROGRAM}")
     set(CXX_LAUNCHER "${CCACHE_PROGRAM}")
     set(CUDA_LAUNCHER "${CCACHE_PROGRAM}")
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
 
     file(WRITE "${CMAKE_BINARY_DIR}/launch-c" ""
         "#!/usr/bin/env sh\n"
@@ -67,8 +68,10 @@ if(CCACHE_PROGRAM)
         set(CMAKE_C_COMPILER_LAUNCHER   "${CMAKE_BINARY_DIR}/launch-c")
         set(CMAKE_CXX_COMPILER_LAUNCHER "${CMAKE_BINARY_DIR}/launch-cxx")
         set(CMAKE_CUDA_COMPILER_LAUNCHER "${CMAKE_BINARY_DIR}/launch-cuda")
+        set(GLOBAL PROPERTY CMAKE_C_COMPILER_LAUNCHER   "${CMAKE_BINARY_DIR}/launch-c")
+        set(GLOBAL PROPERTY CMAKE_CXX_COMPILER_LAUNCHER "${CMAKE_BINARY_DIR}/launch-cxx")
+        set(GLOBAL PROPERTY CMAKE_CUDA_COMPILER_LAUNCHER "${CMAKE_BINARY_DIR}/launch-cuda")
     endif()
-
     message(STATUS "Using CCache")
 else()
     message(STATUS "Not using CCache")

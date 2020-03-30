@@ -14,3 +14,16 @@ endif(MINIZ_GOTTEN)
 
 
 target_compile_features(miniz_test PUBLIC cxx_std_17)
+
+
+add_executable(mimetic_test mimetic_test.cpp)
+
+IF(MIMETIC_GOTTEN)
+    target_link_libraries(mimetic_test PRIVATE ${MIMETIC_LIBRARIES} ${Boost_LIBRARIES})
+    INCLUDE_DIRECTORIES(${MIMETIC_INCLUDE_DIR})
+ELSE(MIMETIC_GOTTEN)
+    message(STATUS "Miniz not found")
+endif(MIMETIC_GOTTEN)
+
+
+target_compile_features(mimetic_test PUBLIC cxx_std_17)

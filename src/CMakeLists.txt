@@ -21,6 +21,13 @@ ELSE(MINIZ_GOTTEN)
 	message(STATUS "Miniz not found")
 endif(MINIZ_GOTTEN)
 
+IF(MIMETIC_GOTTEN)
+    target_link_libraries(IMAPlw PRIVATE ${MIMETIC_LIBRARIES})
+    INCLUDE_DIRECTORIES(${MIMETIC_INCLUDE_DIR})
+ELSE(MIMETIC_GOTTEN)
+    message(STATUS "Mimetic not found")
+endif(MIMETIC_GOTTEN)
+
 # target_link_libraries(IMAPlw gtest gmock gtest_main)
 # add_test(SimpleTest SimpleTest)
 

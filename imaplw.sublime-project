@@ -9,6 +9,38 @@
 			"variants":
 			[
 				{
+					"name": "",
+					"shell_cmd": "cmake --build . --target "
+				},
+				{
+					"name": "",
+					"shell_cmd": "cmake --build . --target "
+				},
+				{
+					"name": "",
+					"shell_cmd": "cmake --build . --target "
+				},
+				{
+					"name": "",
+					"shell_cmd": "cmake --build . --target "
+				},
+				{
+					"name": "",
+					"shell_cmd": "cmake --build . --target "
+				},
+				{
+					"name": "",
+					"shell_cmd": "cmake --build . --target "
+				},
+				{
+					"name": "",
+					"shell_cmd": "cmake --build . --target "
+				},
+				{
+					"name": "-- Build files have been written to",
+					"shell_cmd": "cmake --build . --target -- Build files have been written to"
+				},
+				{
 					"name": "install/strip",
 					"shell_cmd": "cmake --build . --target install/strip"
 				},
@@ -117,16 +149,16 @@
 					"shell_cmd": "cmake --build . --target test/list_install_components"
 				},
 				{
-					"name": "test/rebuild_cache",
-					"shell_cmd": "cmake --build . --target test/rebuild_cache"
-				},
-				{
 					"name": "test/install/local",
 					"shell_cmd": "cmake --build . --target test/install/local"
 				},
 				{
 					"name": "test/test",
 					"shell_cmd": "cmake --build . --target test/test"
+				},
+				{
+					"name": "test/rebuild_cache",
+					"shell_cmd": "cmake --build . --target test/rebuild_cache"
 				},
 				{
 					"name": "IMAPlw",
@@ -143,6 +175,10 @@
 				{
 					"name": "libpollster.a",
 					"shell_cmd": "cmake --build . --target libpollster.a"
+				},
+				{
+					"name": "mimetic_test",
+					"shell_cmd": "cmake --build . --target mimetic_test"
 				},
 				{
 					"name": "miniz",
