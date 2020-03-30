@@ -1,5 +1,6 @@
 include(ExternalProject)
 message(STATUS "Will fetch Mimetic as part of build")
+find_package(Git)
 ExternalProject_Add(Project_Mimetic
     GIT_REPOSITORY https://github.com/tat/mimetic
     GIT_PROGRESS 1
