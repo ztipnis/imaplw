@@ -4,7 +4,7 @@ find_package(Git)
 ExternalProject_Add(Project_Mimetic
     GIT_REPOSITORY https://github.com/tat/mimetic
     GIT_PROGRESS 1
-    UPDATE_COMMAND ${GIT_EXECUTABLE} stash && ${GIT_EXECUTABLE} pull && ${GIT_EXECUTABLE} stash apply
+    UPDATE_COMMAND ${GIT_EXECUTABLE} stash && ${GIT_EXECUTABLE} pull && ${GIT_EXECUTABLE} stash apply || true
     SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/mimetic
     PATCH_COMMAND patch -p0 < ${CMAKE_CURRENT_SOURCE_DIR}/mimetic-patches/itparser.patch
     CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/mimetic/configure --prefix=${CMAKE_CURRENT_BINARY_DIR}/libmimetic --enable-fast-install=no --enable-static=yes --enable-shared=no
