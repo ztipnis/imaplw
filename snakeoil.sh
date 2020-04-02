@@ -1,3 +1,4 @@
+#/bin/bash
 openssl req \
     -new \
     -newkey ec \
