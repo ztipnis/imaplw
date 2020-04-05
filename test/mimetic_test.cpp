@@ -14,6 +14,7 @@ int main()
     std::cout << "(BODYSTRUCTURE " << mesg.bodyStructure() << ")" << std::endl;
     std::cout << std::endl;
     std::cout << "(BODY " << mesg.body() << ")" << std::endl;
+    std::cout << mesg.body("Header.Fields (lISt-unsubscribe)", 0) << std::endl;
 
     return 0;
 }
