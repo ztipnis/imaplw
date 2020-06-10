@@ -17,6 +17,7 @@
 #include <unordered_map>
 #include <fstream>
 #include <string>
+#include <iostream>
 
 #ifndef __H_CONFIG_PARSER__
 #define __H_CONFIG_PARSER__
@@ -38,30 +39,31 @@ typename std::enable_if<T == Boolean, bool>::type typeCast(const std::string& va
 } 
 
 
-template <cfgType T>
-typename std::enable_if<T == Time, std::chrono::microseconds>::type typeCast(std::string value){
+template <cfgType T, typename RT>
+typename std::enable_if<T == Time, RT>::type typeCast(std::string value){
 	std::stringstream ss(value);
 	std::string buf;
 	while(ss >> std::quoted(buf)){
 		size_t nt;
 		int num = stoi(buf,&nt);
 		std::string suffix(buf.substr(nt));
-		if(buf == "" || buf == "s"){
-			return std::chrono::seconds(num);
-		}else if(buf == "min"){
-			return std::chrono::minutes(num);
-		}else if(buf == "h"){
-			return std::chrono::hours(num);
-		}else if(buf == "d"){
-			return std::chrono::hours(num * 24); //days introduced in C++20 which is not standard at the time of writing
-		}else if(buf == "w"){
-			return std::chrono::hours(num * 24 * 7); //weeks introduced in C++20 which is not standard at the time of writing
-		}else if(buf == "ms"){
-			return std::chrono::milliseconds(num);
-		}else if(buf == "us"){
-			return std::chrono::microseconds(num);
+		if(suffix == "" || suffix == "s"){
+			return std::chrono::duration_cast<RT>(std::chrono::seconds(num));
+		}else if(suffix == "min"){
+			return std::chrono::duration_cast<RT>(std::chrono::minutes(num));
+		}else if(suffix == "h"){
+			return std::chrono::duration_cast<RT>(std::chrono::hours(num));
+		}else if(suffix == "d"){
+			return std::chrono::duration_cast<RT>(std::chrono::hours(num * 24)); //days introduced in C++20 which is not standard at the time of writing
+		}else if(suffix == "w"){
+			return std::chrono::duration_cast<RT>(std::chrono::hours(num * 24 * 7)); //weeks introduced in C++20 which is not standard at the time of writing
+		}else if(suffix == "ms"){
+			return std::chrono::duration_cast<RT>(std::chrono::milliseconds(num));
+		}else if(suffix == "us"){
+			return std::chrono::duration_cast<RT>(std::chrono::microseconds(num));
 		}
 	}
+	return std::chrono::duration_cast<RT>(std::chrono::seconds(0));
 } 
 
 class Config {
@@ -73,8 +75,12 @@ public:
 		parse(file);
 	}
 	template <cfgType T>
-	auto get(std::string section, std::string item){
+	auto get(const std::string& section, const std::string& item){
 		return typeCast<T>(values[section + "::" + item]);
+	}
+	template <cfgType T, typename RT>
+	RT get(const std::string& section, const std::string& item){
+		return typeCast<T,RT>(values[section + "::" + item]);
 	}
 	std::string debug(){
 		std::stringstream ss;

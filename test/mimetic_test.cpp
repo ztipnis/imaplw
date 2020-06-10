@@ -13,8 +13,10 @@ int main()
     std::cout << std::endl;
     std::cout << "(BODYSTRUCTURE " << mesg.bodyStructure() << ")" << std::endl;
     std::cout << std::endl;
-    std::cout << "(BODY " << mesg.body() << ")" << std::endl;
+    std::string body = mesg.body("", 0);
+    std::cout << "(BODY[]<0> {" << body.length() << "}" << std::endl << body << ")" << std::endl;
     std::cout << mesg.body("Header.Fields (lISt-unsubscribe)", 0) << std::endl;
 
     return 0;
+
 }

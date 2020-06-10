@@ -8,6 +8,7 @@
 #define min(a,b) ( a < b ? a : b)
 #define max(a,b) ( a > b ? a : b)
 #define Z_BUF_SIZE (1024*1024)
+typedef unsigned int uint;
 const std::string deflate(const std::string& data, const int level){
   z_stream strm = {0};
   std::string outbuf(Z_BUF_SIZE, 0);

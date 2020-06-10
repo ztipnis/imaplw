@@ -101,10 +101,12 @@ int main(int argc, char* argv[]) {
                                 cfg.get<String>("TLS", "KeyPath").c_str(),
                                 cfg.get<String>("TLS", "CertPath").c_str());
     IMAPProvider::IMAPProvider<GAuthP, DAuthP> p(c);
+    std::chrono::seconds s = cfg.get<Time, std::chrono::seconds>("IMAP", "Timeout");
+    BOOST_LOG_TRIVIAL(debug) << "Timeout: " << s.count();
     SocketPool sp(port, address,
                   cfg.get<Numeric>("General", "Threads"),
                   cfg.get<Numeric>("General", "Clients"),
-                  p, std::chrono::minutes(5));
+                  p, s);
     BOOST_LOG_TRIVIAL(trace) << "CONFIG SETTINGS:" << std::endl << cfg.debug();
     BOOST_LOG_TRIVIAL(info) << "IMAPlw Listening on " << cfg.get<String>("General", "Address") << ":" << cfg.get<Numeric>("General", "Port");
     // signal(SIGPIPE, SIG_IGN); //Disable SIGPIPES
