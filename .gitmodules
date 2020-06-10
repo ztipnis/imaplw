@@ -3,3 +3,7 @@
 	url = git@github.com:ztipnis/SocketPool.git
 	branch = master
 	update = rebase
+[submodule "src/IMAP"]
+	path = src/IMAP
+	url = git@github.com:ztipnis/libimaplw.git
+	branch = master
